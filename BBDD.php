@@ -21,12 +21,12 @@ class BBDD {
     private $pass;
     private $bd;
 
-    public function __construct($host = "localhost", $user = "root", $pass = "root", $bd = "dwes") {
+    public function __construct($host = "172.17.0.2", $user = "root", $pass = "root", $bd = "dwes") {
         $this->host = $host;
         $this->user = $user;
         $this->pass = $pass;
         $this->bd = $bd;
-        $this->conexion = new mysqli($host, $user, $pass, $bd);
+        $this->conexion = new PDO("mysql:dbname=$bd;host=$host", $user, $pass);
     }
 
     public function __toString() {
@@ -55,7 +55,7 @@ class BBDD {
 
     private function getValues($result) {
         $values = [];
-        while ($array = $result->fetch_row()) {
+        while ($array = $result->fetch(PDO::FETCH_ASSOC)) {
             array_push($values, $array);
         }
         return $values;

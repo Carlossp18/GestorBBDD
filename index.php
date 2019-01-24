@@ -10,7 +10,7 @@ if (isset($_POST['submit'])) {
     switch ($_POST['submit']) {
         case "conectar":
             $host = $_POST['host'];
-            $bd = new BBDD($host);
+            $bd = new BBDD();
             $bases = $bd->selectQuery("show databases");
             $_SESSION['conectado'] = true;
             $_SESSION['bases'] = $bases;
@@ -21,7 +21,7 @@ if (isset($_POST['submit'])) {
             } else {
                 $msj = "Has de seleccionar una base de datos";
             }
-            var_dump($msj);
+            var_dump($_POST['basedatos']);
             break;
         case "desconectar":
             session_destroy();
