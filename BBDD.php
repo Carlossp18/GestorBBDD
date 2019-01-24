@@ -21,7 +21,7 @@ class BBDD {
     private $pass;
     private $bd;
 
-    public function __construct($host = "127.0.0.1", $user = "root", $pass = "", $bd = "dwes") {
+    public function __construct($host = "localhost", $user = "root", $pass = "root", $bd = "dwes") {
         $this->host = $host;
         $this->user = $user;
         $this->pass = $pass;
