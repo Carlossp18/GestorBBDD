@@ -3,7 +3,6 @@ spl_autoload_register(function($clase) {
     require "$clase.php";
 });
 
-
 if (isset($_POST['submit'])) {
     session_start();
 
@@ -12,12 +11,14 @@ if (isset($_POST['submit'])) {
             $host = $_POST['host'];
             $bd = new BBDD();
             $bases = $bd->selectQuery("show databases");
-            $_SESSION['conectado'] = true;
-            $_SESSION['bases'] = $bases;
+            $_SESSION['conexion']['host'] = $_POST['host'];
+            $_SESSION['conexion']['user'] = $_POST['usuario'];
+            $_SESSION['conexion']['pass'] = $_POST['pass'];
+            $_SESSION['conexion']['bases'] = $bases;
             break;
         case "acceder":
             if (isset($_POST['basedatos'])) {
-                $_SESSION['basedatos'] = $_POST['basedatos'];
+                $_SESSION['conexion']['basedatos'] = $_POST['basedatos'];
             } else {
                 $msj = "Has de seleccionar una base de datos";
             }
@@ -28,16 +29,16 @@ if (isset($_POST['submit'])) {
             header("Location:index.php");
             break;
     }
-    if (isset($_SESSION['conectado'])) {
-        $bases = $_SESSION['bases'];
-        $conectado = $_SESSION['conectado'];
+    if (isset($_SESSION['bases'])) {
+        $bases = $_SESSION['conexion']['bases'];
+        $conexion = $_SESSION['conexion'];
     }
 }
 ?>
 <html>
     <head>
         <meta charset="UTF-8">
-        <title></title>
+        <title>Autenticacion</title>
     </head>
     <body>
         <fieldset>
@@ -49,11 +50,11 @@ if (isset($_POST['submit'])) {
                 <input type="text" name="usuario" value="root" id="">
                 <label for="pass">Password</label>
                 <input type="text" name="pass" value="root" id="">
-                <input type="submit" value="<?php echo ($_SESSION['conectado'] == true) ? "desconectar" : "conectar" ?>" name="submit">
+                <input type="submit" value="<?php echo (isset($_SESSION['conexion'])) ? "desconectar" : "conectar" ?>" name="submit">
             </form>
         </fieldset>
         <?php
-        if ($conectado):
+        if ($conexion):
             if (isset($msj))
                 echo "<h3>$msj</h3>";
             ?>
@@ -63,7 +64,8 @@ if (isset($_POST['submit'])) {
                     <?php
                     foreach ($bases as $base) {
                         foreach ($base as $b) {
-                            echo "<input type=radio value=$b name=basedatos>";
+                            $check = ($_SESSION['conexion']['basedatos'] == $b) ? "checked" : "";
+                            echo "<input type=radio value=$b name=basedatos $check>";
                             echo "<label for=basedatos>$b</label><br />";
                         }
                     }
