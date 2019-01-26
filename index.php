@@ -2,23 +2,30 @@
 spl_autoload_register(function($clase) {
     require "$clase.php";
 });
-
+$conexion = null;
 if (isset($_POST['submit'])) {
     session_start();
 
     switch ($_POST['submit']) {
         case "conectar":
             $host = $_POST['host'];
-            $bd = new BBDD();
-            $bases = $bd->selectQuery("show databases");
-            $_SESSION['conexion']['host'] = $_POST['host'];
-            $_SESSION['conexion']['user'] = $_POST['usuario'];
-            $_SESSION['conexion']['pass'] = $_POST['pass'];
-            $_SESSION['conexion']['bases'] = $bases;
+            $usuario = $_POST['usuario'];
+            $pass = $_POST['pass'];
+            $bd = new BBDD($host, $usuario, $pass);
+            if ($bd->checkState()) {
+                $bases = $bd->selectQuery("show databases");
+                $_SESSION['conexion']['host'] = $host;
+                $_SESSION['conexion']['user'] = $usuario;
+                $_SESSION['conexion']['pass'] = $pass;
+                $_SESSION['conexion']['bases'] = $bases;
+                $connect = true;
+            }
             break;
         case "acceder":
             if (isset($_POST['basedatos'])) {
                 $_SESSION['conexion']['basedatos'] = $_POST['basedatos'];
+                header("Location:tablas.php");
+                exit();
             } else {
                 $msj = "Has de seleccionar una base de datos";
             }
@@ -29,7 +36,7 @@ if (isset($_POST['submit'])) {
             header("Location:index.php");
             break;
     }
-    if (isset($_SESSION['bases'])) {
+    if (isset($_SESSION['conexion'])) {
         $bases = $_SESSION['conexion']['bases'];
         $conexion = $_SESSION['conexion'];
     }
@@ -45,11 +52,11 @@ if (isset($_POST['submit'])) {
             <legend>Datos de conexión</legend>
             <form action="." method="POST">
                 <label for="host">Host</label>
-                <input type="text" name="host" value="172.17.0.2" id="">
+                <input type="text" name="host" value="127.0.0.1" id="">
                 <label for="usuario">Usuario</label>
                 <input type="text" name="usuario" value="root" id="">
                 <label for="pass">Password</label>
-                <input type="text" name="pass" value="root" id="">
+                <input type="text" name="pass" value="" id="">
                 <input type="submit" value="<?php echo (isset($_SESSION['conexion'])) ? "desconectar" : "conectar" ?>" name="submit">
             </form>
         </fieldset>
