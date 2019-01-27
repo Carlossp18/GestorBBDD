@@ -81,6 +81,16 @@ class BBDD {
         return $campos;
     }
 
+    public function nombresCamposPDO(string $tableName): array {
+        $campos = [];
+        $rs = $db->query("SELECT * FROM $tableName LIMIT 0");
+        for ($i = 0; $i < $rs->columnCount(); $i++) {
+            $col = $rs->getColumnMeta($i);
+            $campos[] = $col['name'];
+        }
+        return $campos;
+    }
+
     function getConexion() {
         return $this->conexion;
     }
