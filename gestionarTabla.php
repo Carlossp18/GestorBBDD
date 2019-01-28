@@ -13,10 +13,15 @@ if (isset($_SESSION['conexion']['tabla'])) {
     $campos = $bd->nombresCamposPDO($tabla);
     $filas = $bd->selectQuery("select * from $tabla");
     if (isset($_POST['operar'])) {
+        $_SESSION['conexion']['datos'] = $_POST['datos'];
         switch ($_POST['operar']) {
             case "editar":
+                header("Location:modify.php");
+                exit();
                 break;
             case "borrar":
+                header("Location:gestionarTablas.php");
+                exit();
                 break;
         }
     }
@@ -33,8 +38,11 @@ function mostrarTabla($campos, $filas) {
     echo"</tr>";
     foreach ($filas as $fila) {
         echo "<form action='gestionarTabla.php' method='POST'><tr>";
+        $i = 0;
         foreach ($fila as $f) {
-            echo "<td>$f</td>";
+            echo "<td>$f";
+            echo "<input type='hidden' name='datos[" . $campos[$i] . "]' value='$f'</td>";
+            $i++;
         }
         echo"<td><input type='submit' name='gestionar' value='editar'></td>"
         . "<td><input type='submit' name='gestionar' value='borrar'></td>";
