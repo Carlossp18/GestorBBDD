@@ -10,6 +10,11 @@ if (isset($_SESSION['conexion']['basedatos'])) {
     $base = $_SESSION['conexion']['basedatos'];
     $bd = new BBDD($host, $usuario, $pass, $base);
     $tablas = $bd->selectQuery("show tables");
+    if (isset($_POST['tabla'])) {
+        $_SESSION['conexion']['tabla'] = $_POST['tabla'];
+        header("location:gestionarTabla.php");
+        exit();
+    }
 } else {
     header("Location:index.php");
 }
@@ -34,7 +39,7 @@ if (isset($_SESSION['conexion']['basedatos'])) {
         <?php
         foreach ($tablas as $tabla) {
             foreach ($tabla as $t) {
-                echo "<input type = 'submit' name='tabla' value='$t'>";
+                echo "<form action='tablas.php' method='POST'><input type = 'submit' name='tabla' value='$t'></form>";
             }
         }
         ?>

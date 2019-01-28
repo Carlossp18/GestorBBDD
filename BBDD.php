@@ -83,10 +83,11 @@ class BBDD {
 
     public function nombresCamposPDO(string $tableName): array {
         $campos = [];
-        $rs = $db->query("SELECT * FROM $tableName LIMIT 0");
-        for ($i = 0; $i < $rs->columnCount(); $i++) {
-            $col = $rs->getColumnMeta($i);
-            $campos[] = $col['name'];
+        $consulta = "SHOW COLUMNS FROM $tableName";
+
+        $r = $this->conexion->query($consulta);
+        while ($row = $r->fetch(PDO::FETCH_ASSOC)) {
+            $campos[] = $row['Field'];
         }
         return $campos;
     }
