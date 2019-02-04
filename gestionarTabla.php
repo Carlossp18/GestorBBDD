@@ -12,9 +12,9 @@ if (isset($_SESSION['conexion']['tabla'])) {
     $bd = new BBDD($host, $usuario, $pass, $base);
     $campos = $bd->nombresCamposPDO($tabla);
     $filas = $bd->selectQuery("select * from $tabla");
-    if (isset($_POST['operar'])) {
+    if (isset($_POST['gestionar'])) {
         $_SESSION['conexion']['datos'] = $_POST['datos'];
-        switch ($_POST['operar']) {
+        switch ($_POST['gestionar']) {
             case "editar":
                 header("Location:modify.php");
                 exit();

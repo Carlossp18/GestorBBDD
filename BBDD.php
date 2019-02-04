@@ -92,6 +92,47 @@ class BBDD {
         return $campos;
     }
 
+//    public function preparedStatementPDO($arrayIndexado, $arrayIndexadoNuevo, $tabla) {
+//        $valores = "";
+//        foreach ($arrayIndexadoNuevo as $campo => $valor) {
+//            $valores .= "$campo='$valor' AND ";
+//        }
+//        $valores = substr($valores, 0, -4);
+//        $campos = "";
+//        foreach ($arrayIndexado as $campo => $valor) {
+//            $campos .= "$campo='$valor' AND ";
+//        }
+//        $campos = substr($campos, 0, -4);
+//        $sentencia = "UPDATE $tabla SET $valores WHERE $campos";
+//        $sentencia = $this->conexion->prepare($sentencia);
+//        $sentencia->execute()
+//        var_dump($sentencia);
+//    }
+
+    public function preparedStatementPDO($arrayIndexado, $arrayIndexadoNuevo, $tabla) {
+        $valores = "";
+        foreach ($arrayIndexadoNuevo as $campo => $valor) {
+            $valores .= ":$campo, ";
+        }
+        $valores = substr($valores, 0, -2);
+        $campos = "";
+        foreach ($arrayIndexado as $campo => $valor) {
+            $campos .= ":" . $campo . "1, ";
+        }
+        $campos = substr($campos, 0, -2);
+        $sentencia = "UPDATE $tabla SET $valores WHERE $campos";
+        $sentencia = $this->conexion->prepare($sentencia);
+
+        foreach ($arrayIndexadoNuevo as $campo => $valor) {
+            $sentencia->bindValue(":$campo", $valor);
+        }
+        foreach ($arrayIndexado as $campo => $valor) {
+            $sentencia->bindValue(":" . $campo . "1", $valor);
+        }
+        $sentencia->execute();
+        var_dump($sentencia);
+    }
+
     function getConexion() {
         return $this->conexion;
     }
