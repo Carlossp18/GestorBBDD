@@ -12,10 +12,13 @@ if (isset($_SESSION['conexion']['tabla'])) {
     $seleccion = $_SESSION['conexion']['datos'];
     $bd = new BBDD($host, $usuario, $pass, $base);
     if (isset($_POST['gestionar'])) {
-        $valoresNuevos = $_POST['datosNuevos'];
         $_SESSION['conexion']['datosNuevos'] = $valoresNuevos;
         switch ($_POST['gestionar']) {
             case "editar":
+                foreach ($seleccion as $campo => $v) {
+                    $valoresNuevos[$campo] = $_POST[$campo];
+                }
+                $_SESSION['conexion']['datosNuevos'] = $valoresNuevos;
                 $bd->preparedStatementPDO($seleccion, $valoresNuevos, $tabla);
                 break;
             case "borrar":
@@ -33,7 +36,7 @@ function showValues($valores) {
     foreach ($valores as $campo => $valor) {
         echo "<label>$campo</label>";
         echo "<input type='text' name='$campo' value='$valor'></br>";
-        echo"<input type='hidden' name='datosNuevos[$campo]' value='$valor'>";
+        //echo"<input type='hidden' name='datosNuevos[$campo]' value='$valor'>";
     }
     echo"<input type='submit' name='gestionar' value='editar'>";
     echo"</form>";

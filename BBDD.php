@@ -26,7 +26,10 @@ class BBDD {
         $this->user = $user;
         $this->pass = $pass;
         $this->bd = $bd;
-        $this->conexion = new PDO("mysql:dbname=$bd;host=$host", $user, $pass);
+
+        $opciones = [PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"];
+        $this->conexion = new PDO("mysql:dbname=$bd;host=$host", $user, $pass, $opciones);
+        $this->conexion->exec("set names utf8");
     }
 
     public function __toString() {
@@ -112,25 +115,26 @@ class BBDD {
     public function preparedStatementPDO($arrayIndexado, $arrayIndexadoNuevo, $tabla) {
         $valores = "";
         foreach ($arrayIndexadoNuevo as $campo => $valor) {
-            $valores .= ":$campo, ";
+            $valores .= "$campo = :$campo, ";
         }
         $valores = substr($valores, 0, -2);
         $campos = "";
         foreach ($arrayIndexado as $campo => $valor) {
-            $campos .= ":" . $campo . "1, ";
+            $campos .= "$campo = :" . $campo . "1, ";
         }
         $campos = substr($campos, 0, -2);
         $sentencia = "UPDATE $tabla SET $valores WHERE $campos";
-        $sentencia = $this->conexion->prepare($sentencia);
+        var_dump($sentencia);
+        $stmt = $this->conexion->prepare($sentencia);
 
         foreach ($arrayIndexadoNuevo as $campo => $valor) {
-            $sentencia->bindValue(":$campo", $valor);
+            $update[":$campo"] = $valor;
         }
         foreach ($arrayIndexado as $campo => $valor) {
-            $sentencia->bindValue(":" . $campo . "1", $valor);
+            $update[":$campo" . "1"] = $valor;
         }
-        $sentencia->execute();
-        var_dump($sentencia);
+        var_dump($update);
+        $stmt->execute($update);
     }
 
     function getConexion() {
