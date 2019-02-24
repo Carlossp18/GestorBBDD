@@ -13,15 +13,19 @@ if (isset($_SESSION['conexion']['tabla'])) {
     $campos = $bd->nombresCamposPDO($tabla);
     $filas = $bd->selectQuery("select * from $tabla");
     if (isset($_POST['gestionar'])) {
-        $_SESSION['conexion']['datos'] = $_POST['datos'];
+        $_SESSION['conexion']['tipoC'] = $_POST['gestionar'];
         switch ($_POST['gestionar']) {
             case "editar":
+                $_SESSION['conexion']['datos'] = $_POST['datos'];
                 header("Location:modify.php");
                 exit();
                 break;
             case "borrar":
-                header("Location:gestionarTablas.php");
-                exit();
+                $_SESSION['conexion']['datos'] = $_POST['datos'];
+                header("Location:modify.php");
+                break;
+            case "insertar":
+                header("Location:modify.php");
                 break;
         }
     }
@@ -71,6 +75,9 @@ function mostrarTabla($campos, $filas) {
         </style>
     </head>
     <body>
+        <form action="gestionarTabla.php" method="POST">
+            <input type="submit" name="gestionar" value="insertar">
+        </form>
         <?php mostrarTabla($campos, $filas) ?>
     </body>
 </html>

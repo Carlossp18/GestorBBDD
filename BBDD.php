@@ -73,7 +73,7 @@ class BBDD {
      * @param string $tableName
      * @return array
      */
-    public function nombresCampos(string $tableName): array {
+    public function nombresCampos(string $tableName) {
         $campos = [];
         $consulta = "SHOW COLUMNS FROM $tableName";
 
@@ -84,7 +84,7 @@ class BBDD {
         return $campos;
     }
 
-    public function nombresCamposPDO(string $tableName): array {
+    public function nombresCamposPDO(string $tableName) {
         $campos = [];
         $consulta = "SHOW COLUMNS FROM $tableName";
 
@@ -120,9 +120,12 @@ class BBDD {
         $valores = substr($valores, 0, -2);
         $campos = "";
         foreach ($arrayIndexado as $campo => $valor) {
-            $campos .= "$campo = :" . $campo . "1, ";
+            if ($valor == "")
+                $campos .= "$campo is null and ";
+            else
+                $campos .= "$campo = :" . $campo . "1 and ";
         }
-        $campos = substr($campos, 0, -2);
+        $campos = substr($campos, 0, -4);
         $sentencia = "UPDATE $tabla SET $valores WHERE $campos";
         var_dump($sentencia);
         $stmt = $this->conexion->prepare($sentencia);
@@ -131,7 +134,42 @@ class BBDD {
             $update[":$campo"] = $valor;
         }
         foreach ($arrayIndexado as $campo => $valor) {
-            $update[":$campo" . "1"] = $valor;
+            if ($valor != "")
+                $update[":$campo" . "1"] = $valor;
+        }
+        $stmt->execute($update);
+    }
+
+    public function preparedInsert($datos, $tabla) {
+        $valores = "";
+        $campos = "";
+        foreach ($datos as $campo => $valor) {
+            $valores .= ":$campo, ";
+            $campos .= "$campo, ";
+        }
+        $valores = substr($valores, 0, -2);
+        $campos = substr($campos, 0, -2);
+        $sentencia = "INSERT into $tabla ($campos) values ($valores)";
+        var_dump($sentencia);
+        $stmt = $this->conexion->prepare($sentencia);
+        foreach ($datos as $campo => $valor) {
+            $update[":$campo"] = $valor;
+        }
+        var_dump($update);
+        $stmt->execute($update);
+    }
+
+    public function preparedDelete($datos, $tabla) {
+        $valores = "";
+        foreach ($datos as $campo => $valor) {
+            $valores .= "$campo = :$campo AND ";
+        }
+        $valores = substr($valores, 0, -4);
+        $sentencia = "DELETE FROM $tabla WHERE $valores";
+        var_dump($sentencia);
+        $stmt = $this->conexion->prepare($sentencia);
+        foreach ($datos as $campo => $valor) {
+            $update[":$campo"] = $valor;
         }
         var_dump($update);
         $stmt->execute($update);
