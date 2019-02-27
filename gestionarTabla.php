@@ -75,6 +75,9 @@ function mostrarTabla($campos, $filas) {
         </style>
     </head>
     <body>
+        <form action="tablas.php" method="POST">
+            <input type="submit" name="gestionar" value="volver">
+        </form>
         <form action="gestionarTabla.php" method="POST">
             <input type="submit" name="gestionar" value="insertar">
         </form>

@@ -21,7 +21,7 @@ class BBDD {
     private $pass;
     private $bd;
 
-    public function __construct($host = "172.17.0.2", $user = "root", $pass = "", $bd = "dwes") {
+    public function __construct($host = "172.17.0.2", $user = "root", $pass = "root", $bd = "dwes") {
         $this->host = $host;
         $this->user = $user;
         $this->pass = $pass;
@@ -113,30 +113,26 @@ class BBDD {
 //    }
 
     public function preparedStatementPDO($arrayIndexado, $arrayIndexadoNuevo, $tabla) {
-        $valores = "";
+
         foreach ($arrayIndexadoNuevo as $campo => $valor) {
             $valores .= "$campo = :$campo, ";
+            $update[":$campo"] = $valor;
         }
         $valores = substr($valores, 0, -2);
-        $campos = "";
+
         foreach ($arrayIndexado as $campo => $valor) {
             if ($valor == "")
                 $campos .= "$campo is null and ";
-            else
+            else {
                 $campos .= "$campo = :" . $campo . "1 and ";
+                $update[":$campo" . "1"] = $valor;
+            }
         }
         $campos = substr($campos, 0, -4);
+
         $sentencia = "UPDATE $tabla SET $valores WHERE $campos";
-        var_dump($sentencia);
         $stmt = $this->conexion->prepare($sentencia);
 
-        foreach ($arrayIndexadoNuevo as $campo => $valor) {
-            $update[":$campo"] = $valor;
-        }
-        foreach ($arrayIndexado as $campo => $valor) {
-            if ($valor != "")
-                $update[":$campo" . "1"] = $valor;
-        }
         $stmt->execute($update);
     }
 

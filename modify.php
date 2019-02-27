@@ -76,6 +76,9 @@ function showValuesInsertar($campos) {
         <title>modifica el valor</title>
     </head>
     <body>
+        <form action="gestionarTabla.php" method="POST">
+            <input type="submit" name="gestionar" value="volver">
+        </form>
 
         <?php
         if ($tipo != "") {
